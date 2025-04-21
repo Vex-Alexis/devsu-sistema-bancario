@@ -1,0 +1,2 @@
+clientes:
+  base-url: http://clientes-service:8080/clientes/identificacion/

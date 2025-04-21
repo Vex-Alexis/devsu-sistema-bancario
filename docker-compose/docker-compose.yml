@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: devsu
+    restart: always
+    environment:
+      POSTGRES_DB: devsu_db
+      POSTGRES_USER: devsu
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - devsu_data:/var/lib/postgresql/data
+      - ./db-scripts/01_DataBase.sql:/docker-entrypoint-initdb.d/01_DataBase.sql:ro
+      - ./db-scripts/02_Populate.sql:/docker-entrypoint-initdb.d/02_Populate.sql:ro
+    networks:
+      - devsu_net
+
+  clientes-service:
+    build: ../clientes-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/devsu_db
+      SPRING_DATASOURCE_USERNAME: devsu
+      SPRING_DATASOURCE_PASSWORD: 123
+    networks:
+      - devsu_net
+
+  cuentas-service:
+    build: ../cuentas-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/devsu_db
+      SPRING_DATASOURCE_USERNAME: devsu
+      SPRING_DATASOURCE_PASSWORD: 123
+    networks:
+      - devsu_net
+
+
+volumes:
+  devsu_data:
+
+networks:
+  devsu_net:
+    driver: bridge

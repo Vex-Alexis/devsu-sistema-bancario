@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: clientes-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/devsu_db
+    username: devsu
+    password: 123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update  # O usa 'validate' en producci�n
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+
+server:
+  port: 8080
